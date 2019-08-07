@@ -1,1 +1,1 @@
-module.exports = false;//false 为线上, true 为本地
+module.exports = true;//false 为线上, true 为本地
