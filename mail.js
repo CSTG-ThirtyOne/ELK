@@ -1,6 +1,6 @@
 'use strict';
 const nodemailer = require('nodemailer');
-const DEV_MODE = false;//false 为线上, true 为本地
+const DEV_MODE = require('./config');
 
 const accountConfig = DEV_MODE ? {
     host : 'smtp.ethereal.email',

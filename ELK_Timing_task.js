@@ -1,5 +1,6 @@
 var schedule = require('node-schedule');
 var searchLog = require('./search_log');
+var DEV_MODE = require('./config');
 
 function scheduleCronstyle(){
     //sec(optional) min hour day month week
@@ -7,6 +8,6 @@ function scheduleCronstyle(){
         console.log('scheduleCronstyle:' + new Date());
         searchLog();
     }); 
-    searchLog();
 }
-scheduleCronstyle();
+
+DEV_MODE ? searchLog() : scheduleCronstyle();
