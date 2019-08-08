@@ -3,7 +3,7 @@
         {
         "name": "ELK_Timing_Task",
         "cwd": "/root/elk_task/ELK_Program/ELK",
-        "script": "./ELK_Timing_Task.js",
+        "script": "/root/elk_task/ELK_Program/ELK/ELK_Timing_Task.js",
         "log_date_format": "YYYY-MM-DD HH:mm Z",
         "error_file": "elk_error_log.log",
         "out_file": "elk_out_log.log",
