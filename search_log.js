@@ -96,8 +96,8 @@ var handlerAllException = function(exceptionList) {
 
 function initRequestData() {
     indicesNameList = [], searchIndicesCount = 0, allExceptionList = [];
-    currentTimeStamp = new Date().getTime(),
-    // currentTimeStamp = new Date('8/6/2019').setHours(9,00),
+    // currentTimeStamp = new Date().getTime(),
+    currentTimeStamp = new Date('8/14/2019').setHours(9,00),
     earlyTimeStamp = currentTimeStamp - day * 24 * 60 * 60 * 1000;
     requestData = {
         fields : ["@timestamp"],
