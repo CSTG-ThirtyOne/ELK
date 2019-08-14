@@ -2,7 +2,6 @@
     "apps": [
         {
         "name": "test",
-        "cwd": "~",
         "script": "ELK_Timing_Task.js",
         "log_date_format": "YYYY-MM-DD HH:mm Z",
         "error_file": "elk_error_log.log",
