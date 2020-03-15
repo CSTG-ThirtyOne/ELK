@@ -127,7 +127,7 @@ function searchLog() {
 
 function scheduleCronstyle(){
     if(DEV_MODE) {
-        schedule.scheduleJob('* 28 * * * *', function(){
+        schedule.scheduleJob('0 38 * * * *', function(){
             searchLog();
         });
     } else {
