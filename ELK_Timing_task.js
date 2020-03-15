@@ -69,8 +69,8 @@ var handlerAllException = function(exceptionList) {
 
     let spendTime = ((new Date().getTime()) - startDate.getTime()) / 1000 / 60;
 
-    console.log('耗时：' + spendTime + 'min');
-    console.log('准备发邮件');
+    console.log('spend time：' + spendTime + 'min');
+    console.log('ready send email');
 
     var resultObj = exceptionObjList.sort(compare("count"));
     var resultBody = '';
@@ -104,8 +104,8 @@ let startDate;
 
 function searchLog() {
     startDate = new Date();
-    // const cpus = require('os').cpus();
-    // console.log(cpus.length)
+    const cpus = require('os').cpus();
+    console.log(cpus.length)
     // return;
     let processNum = 2;
 
@@ -115,20 +115,19 @@ function searchLog() {
             count++;
             allProblems = allProblems.concat(m);
             if(count === processNum) {
-                console.log('总计：' + allProblems.length);
+                console.log('all count：' + allProblems.length);
                 handlerAllException(allProblems);
             }
         });
         worker_process.on('close', function (code) {
-            console.log('子进程已退出，退出码 ' + code + ' ' + new Date());
+            console.log('child process exit, code: ' + code + ' ' + new Date());
         });
     }
 }
 
 function scheduleCronstyle(){
     if(DEV_MODE) {
-        schedule.scheduleJob('0 40 23 * * *', function(){
-            console.log('test');
+        schedule.scheduleJob('0 55 23 * * *', function(){
             searchLog();
         });
     } else {
