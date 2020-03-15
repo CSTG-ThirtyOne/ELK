@@ -17,7 +17,7 @@ const accountConfig = DEV_MODE ? {
         user: 'zhuming@youshikoudai.com',
         pass: 'Zm19930710'
     }
-}
+};
 
 const mailOptions = DEV_MODE ? {
     from: '"朱明" <doedpspuio5xaamr@ethereal.email>', // sender address
@@ -27,7 +27,7 @@ const mailOptions = DEV_MODE ? {
     from: '"朱明" <zhuming@youshikoudai.com>', // sender address
     to: 'tech@youshikoudai.com', // list of receivers
     subject: 'ELK日志每日分析报告', // Subject line
-}
+};
 
 function sendEmail(data) {
     nodemailer.createTestAccount((err, account) => {
