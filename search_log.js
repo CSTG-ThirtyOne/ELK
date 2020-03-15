@@ -132,8 +132,8 @@ function serializeOneHour(baseTime, stage, hours) {
 
 const param = process.argv[2];
 const processNum = process.argv[3];
-const currentTime = new Date('3/15/2020').setHours(9, 0);//调试
-// const currentTime = new Date().setHours(9, 0);
+// const currentTime = new Date('3/15/2020').setHours(9, 0);//调试
+const currentTime = new Date().setHours(9, 0);
 process.send = process.send || function () {};
 
 if(param) {
