@@ -69,7 +69,7 @@ var handlerAllException = function(exceptionList) {
 
     let spendTime = ((new Date().getTime()) - startDate.getTime()) / 1000 / 60;
 
-    console.log('spend time：' + spendTime + 'min');
+    console.log('spend time: ' + spendTime + 'min');
     console.log('ready send email');
 
     var resultObj = exceptionObjList.sort(compare("count"));
@@ -104,8 +104,8 @@ let startDate;
 
 function searchLog() {
     startDate = new Date();
-    const cpus = require('os').cpus();
-    console.log(cpus.length)
+    // const cpus = require('os').cpus();
+    // console.log(cpus.length)
     // return;
     let processNum = 2;
 
@@ -115,7 +115,7 @@ function searchLog() {
             count++;
             allProblems = allProblems.concat(m);
             if(count === processNum) {
-                console.log('all count：' + allProblems.length);
+                console.log('all count: ' + allProblems.length);
                 handlerAllException(allProblems);
             }
         });
