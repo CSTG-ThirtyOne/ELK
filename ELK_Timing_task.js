@@ -127,12 +127,12 @@ function searchLog() {
 
 function scheduleCronstyle(){
     if(DEV_MODE) {
-        schedule.scheduleJob('0 38 * * * *', function(){
+        schedule.scheduleJob('0 50 * * * *', function(){
             searchLog();
         });
     } else {
         //sec(optional) min hour day month week
-        schedule.scheduleJob('0 25 10 * * *', function(){
+        schedule.scheduleJob('0 0 9 * * *', function(){
             console.log('scheduleCronstyle:' + new Date());
             searchLog();
         });
