@@ -132,7 +132,7 @@ function scheduleCronstyle(){
         });
     } else {
         //sec(optional) min hour day month week
-        schedule.scheduleJob('0 0 9 * * *', function(){
+        schedule.scheduleJob('0 10 10 * * *', function(){
             console.log('scheduleCronstyle:' + new Date());
             searchLog();
         });

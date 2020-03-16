@@ -25,7 +25,7 @@ const mailOptions = DEV_MODE ? {
     subject: 'ELK日志分析test', // Subject line
 } : {
     from: '"朱明" <zhuming@youshikoudai.com>', // sender address
-    to: 'tech@youshikoudai.com', // list of receivers
+    to: 'zhuming@youshikoudai.com', // list of receivers
     subject: 'ELK日志每日分析报告', // Subject line
 };
 
