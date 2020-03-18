@@ -107,7 +107,7 @@ function searchLog() {
     // const cpus = require('os').cpus();
     // console.log(cpus.length)
     // return;
-    let processNum = 2;
+    let processNum = 1;
 
     for(let i = 0; i < processNum; i++) {
         let worker_process = child_process.fork("search_log.js", [i, processNum]);
