@@ -127,7 +127,8 @@ function searchLog() {
 
 function scheduleCronstyle(){
     if(DEV_MODE) {
-        schedule.scheduleJob('0 50 * * * *', function(){
+        schedule.scheduleJob('0 30 * * * *', function(){
+            console.log('scheduleCronstyle:' + new Date());
             searchLog();
         });
     } else {
