@@ -7,7 +7,7 @@ module.exports = {
     watch: false,
     max_memory_restart: '500M',
     log_date_format: 'YYYY-MM-DD HH:mm Z',
-    error_file: 'elk_error_log.log',
-    out_file: 'elk_out_log.log'
+    error_file: 'error.log',
+    out_file: 'out.log'
   }],
 };
