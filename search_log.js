@@ -3,19 +3,24 @@ const axios = require('axios');
 
 let allProblems = [];
 
+let reqCount = 0;
+let finishReqCount = 0;
+
 function singleSearchRequest(indexName, earlyTimeStamp, currentTimeStamp) {
     var paramData = '{"index":["' + indexName + '"],"ignore_unavailable":true,"preference":1530523895200}\n{"size":10000,"sort":[{"@timestamp":{"order":"desc","unmapped_type":"boolean"}}],"query":{"bool":{"must":[{"query_string":{"query":"*","analyze_wildcard":true}},{"range":{"@timestamp":{"gte":'+  earlyTimeStamp +',"lte":' + currentTimeStamp +',"format":"epoch_millis"}}}],"must_not":[]}},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}},"require_field_match":false,"fragment_size":2147483647},"_source":{"excludes":[]},"aggs":{"2":{"date_histogram":{"field":"@timestamp","interval":"30m","time_zone":"Asia/Shanghai","min_doc_count":1}}},"stored_fields":["*"],"script_fields":{},"docvalue_fields":["@timestamp"]}\n';
 
     return new Promise(resolve => {
-        axios.post('http://101.37.35.105:5601/elasticsearch/_msearch',
-          paramData,{
-              headers: {
-                  'Content-Type': 'application/x-ldjson',
-                  'kbn-version': '5.2.2'
-              }
-          }).then(res => {
-            resolve(res.data);
-        });
+        setTimeout(() => {
+            axios.post('http://101.37.35.105:5601/elasticsearch/_msearch',
+              paramData,{
+                  headers: {
+                      'Content-Type': 'application/x-ldjson',
+                      'kbn-version': '5.2.2'
+                  }
+              }).then(res => {
+                resolve(res.data);
+            });
+        }, 100);
     });
 }
 
@@ -48,7 +53,13 @@ function getAllIndices(data, earlyTime, currentTime) {
                 allRequest.push(singleSearchRequest(indicesNameList[i], earlyTime, currentTime));
             }
 
+            reqCount += allRequest.length;
+            console.log('总请求数：' + reqCount);
+
             Promise.all(allRequest).then(datas => {
+
+                finishReqCount += datas.length;
+                console.log('已结束的请求数：' + finishReqCount);
                 //datas array
                 //datas[0]  object {responses : array}
                 if(datas.length === 0) {
