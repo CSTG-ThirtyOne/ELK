@@ -3,25 +3,19 @@ const axios = require('axios');
 
 let allProblems = [];
 
-let reqCount = 0;
 let finishReqCount = 0;
 
 function singleSearchRequest(indexName, earlyTimeStamp, currentTimeStamp) {
     var paramData = '{"index":["' + indexName + '"],"ignore_unavailable":true,"preference":1530523895200}\n{"size":10000,"sort":[{"@timestamp":{"order":"desc","unmapped_type":"boolean"}}],"query":{"bool":{"must":[{"query_string":{"query":"*","analyze_wildcard":true}},{"range":{"@timestamp":{"gte":'+  earlyTimeStamp +',"lte":' + currentTimeStamp +',"format":"epoch_millis"}}}],"must_not":[]}},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}},"require_field_match":false,"fragment_size":2147483647},"_source":{"excludes":[]},"aggs":{"2":{"date_histogram":{"field":"@timestamp","interval":"30m","time_zone":"Asia/Shanghai","min_doc_count":1}}},"stored_fields":["*"],"script_fields":{},"docvalue_fields":["@timestamp"]}\n';
 
-    return new Promise(resolve => {
-        setTimeout(() => {
-            axios.post('http://101.37.35.105:5601/elasticsearch/_msearch',
-              paramData,{
-                  headers: {
-                      'Content-Type': 'application/x-ldjson',
-                      'kbn-version': '5.2.2'
-                  }
-              }).then(res => {
-                resolve(res.data);
-            });
-        }, 100);
-    });
+    return axios.post('http://101.37.35.105:5601/elasticsearch/_msearch',
+      paramData,{
+          headers: {
+              'Content-Type': 'application/x-ldjson',
+              'kbn-version': '5.2.2'
+          },
+          timeout : 300000
+      });
 }
 
 //查询一个时段内的所有indices
@@ -50,40 +44,58 @@ function getAllIndices(data, earlyTime, currentTime) {
             //构造所有搜索内容的请求
             let allRequest = [];
             for(let i = 0; i < indicesNameList.length; i++) {
-                allRequest.push(singleSearchRequest(indicesNameList[i], earlyTime, currentTime));
+                // allRequest.push(singleSearchRequest(indicesNameList[i], earlyTime, currentTime));
+
+                allRequest.push({
+                    indicesName : indicesNameList[i], earlyTime, currentTime
+                });
             }
 
-            reqCount += allRequest.length;
-            console.log('总请求数：' + reqCount);
+            resolve(allRequest);
 
-            Promise.all(allRequest).then(datas => {
+        });
+    });
+}
 
-                finishReqCount += datas.length;
-                console.log('已结束的请求数：' + finishReqCount);
-                //datas array
-                //datas[0]  object {responses : array}
-                if(datas.length === 0) {
-                    resolve([]);
-                    return;
-                }
-                let allExceptionList = [];
-                for(let i = 0; i < datas.length; i++) {
-                    let responses = datas[i].responses;
-                    if(!responses || responses.length === 0) {
-                        continue;
-                    }
-                    let hits = responses[0].hits.hits;
+//递归处理请求
+function handleReq(reqList, index) {
+    let startTime = new Date().getTime();
+    let {indicesName, earlyTime, currentTime} = reqList[index];
+    let req = singleSearchRequest(indicesName, earlyTime, currentTime);
+    req.then(reqRes => {
+        finishReqCount++;
+        console.log('已结束的请求数：' + finishReqCount + `; 耗时:${new Date().getTime() - startTime}`);
+        let {responses} = reqRes.data;
+        if(responses && responses.length > 0) {
+            let allExceptionList = [];
+            try {
+                for(let i = 0; i < responses.length; i++) {
+                    let hits = responses[i].hits.hits;
                     for(let t = 0; t < hits.length; t++) {
                         allExceptionList.push({
                             name : hits[t]._source.message
                         });
                     }
                 }
-                resolve(allExceptionList);
-            });
-        });
+            }
+            catch(error) {
+                console.error(error);
+            }
+            allProblems = allProblems.concat(allExceptionList);
+        }
+        index++;
+        if(reqList.length === index + 1) {
+            process.send(allProblems);
+        } else {
+            console.log(`开始第${index+1}个请求`);
+            handleReq(reqList, index);
+        }
+    }).catch(() => {
+        console.log(`重试第${index+1}个请求`);
+        handleReq(reqList, index);
     });
 }
+
 
 //24小时切分，再进行汇总
 function serializeOneHour(baseTime, stage, hours) {
@@ -128,13 +140,14 @@ function serializeOneHour(baseTime, stage, hours) {
             return getAllIndices(json, earlyTime, currentTime);
         });
 
-
-        Promise.all(getAllIndicesPromise).then(allExceptions => {
-            for(let i = 0; i < allExceptions.length; i++) {
-                allProblems = allProblems.concat(allExceptions[i]);
+        let allReqPromise = [];
+        Promise.all(getAllIndicesPromise).then(datas => {
+            for(let i = 0; i < datas.length; i++) {
+                allReqPromise = allReqPromise.concat(datas[i]);
             }
-            //处理所有exception
-            process.send(allProblems);
+            console.log(allReqPromise.length);
+            //同步处理所有请求
+            handleReq(allReqPromise, 0);
         });
 
     })
